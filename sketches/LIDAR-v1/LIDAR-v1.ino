@@ -7,14 +7,13 @@ extern "C" {
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox2 = Adafruit_VL53L0X();
 Adafruit_VL53L0X lox3 = Adafruit_VL53L0X();
+uint16_t toInt;
 
 #define TCAADDR 0x70
 
 #define LOX_ADDR 0x29
 
-#define shut_lox1 10
-#define shut_lox2 9
-#define shut_lox3 8
+
 
 #define lox1_dio 31
 #define lox2_dio 33
@@ -77,7 +76,7 @@ void tcaselect(uint8_t i) {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
+
   lox1.rangingTest(&measure1, false);
   if (measure1.RangeStatus != 4) {  // phase failures have incorrect data
     Serial.print("Distance (mm 1): "); 
@@ -85,8 +84,14 @@ void loop() {
   } else {
     Serial.println(" out of range ");
   }
-
-  if((measure1.RangeMilliMeter <= 35) ||( measure1.Range Status == 4))
+  if(measure1.RangeMilliMeter <= 100)
+  {
+      digitalWrite(lox1_dio, HIGH);
+  }
+  else if(measure1.RangeMilliMeter > 100 )
+  {
+      digitalWrite(lox1_dio, LOW);
+  }
 
   lox2.rangingTest(&measure2, false);
   if (measure2.RangeStatus != 4) {  // phase failures have incorrect data
@@ -95,12 +100,32 @@ void loop() {
   } else {
     Serial.println(" out of range ");
   }
+  if(measure2.RangeMilliMeter <= 100)
+  {
+      digitalWrite(lox2_dio, HIGH);
+      Serial.println("HIGH");
+  }
+  else if(measure2.RangeMilliMeter > 100)
+  {
+      digitalWrite(lox2_dio, LOW);
+      Serial.println("LOW");
+  }
   lox3.rangingTest(&measure3, false);
   if (measure3.RangeStatus != 4) {  // phase failures have incorrect data
     Serial.print("Distance (mm 3): "); 
     Serial.println(measure3.RangeMilliMeter);
   } else {
     Serial.println(" out of range ");
+  }
+  if(measure3.RangeMilliMeter <= 100)
+  {
+      digitalWrite(lox3_dio, HIGH);
+      Serial.println("HIGH");
+  }
+  else if(measure3.RangeMilliMeter > 100)
+  {
+      digitalWrite(lox3_dio, LOW);
+      Serial.println("LOW");
   }
   //read_triple_sensors();
     
